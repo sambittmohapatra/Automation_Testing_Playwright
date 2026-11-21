@@ -14,9 +14,11 @@ test.describe("New UserSignUp", () => {
     });
 
     test("newuser signup step-1", async () => {
+         const uniqueEmail =
+            `sambit${Date.now()}@gmail.com`;
 
         await newsignup.signup("sambitt kumar MOhapatra",
-            "sambit1991@gmail.com")
+            uniqueEmail)
         console.log(await newsignup.page.url());
         await expect(newsignup.page).toHaveURL("https://automationexercise.com/signup")
 
