@@ -6,7 +6,7 @@ dotenv.config();
 let newsignup;
 let createaccount;
 
-test("create Account", async ({ page }) => {
+test("create Account @regression" , async ({ page }) => {
 
     // new usersignup 
     const URL = process.env.BASEURL;
