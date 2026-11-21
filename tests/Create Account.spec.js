@@ -1,0 +1,52 @@
+import { test, expect } from "@playwright/test"
+import { NewUserSignUp } from "../Page/SignUpPage"
+import { CreateAccount } from "../Page/createAccount"
+import dotenv from "dotenv"
+dotenv.config();
+let newsignup;
+let createaccount;
+
+test("create Account", async ({ page }) => {
+
+    // new usersignup 
+    const URL = process.env.BASEURL;
+    await page.goto(`${URL}/login`); // uses baseURL automatically
+    newsignup = new NewUserSignUp(page);
+    await newsignup.signup("sambitt kumar MOhapatra",
+        "sambit19911@gmail.com")
+    console.log(await newsignup.page.url());
+    await expect(newsignup.page).
+    toHaveURL("https://automationexercise.com/signup")
+ // user Navigate to use 
+  createaccount = new CreateAccount(page);
+
+await createaccount.selectTitle();
+
+        await createaccount.enterPassword("Test@123");
+
+        await createaccount.selectDOB(
+            "10",
+            "5",
+            "1998"
+        );
+
+        await createaccount.subscribeNewsletter();
+
+        await createaccount.subscribeSpecialOffer();
+
+        await createaccount.fillAddressInfo(
+            "Sambit",
+            "Mohapatra",
+            "ABC Pvt Ltd",
+            "Bhubaneswar",
+            "India",
+            "Odisha",
+            "Bhubaneswar",
+            "751001",
+            "9876543210"
+        );
+
+        await createaccount.clickCreateAccount();
+
+    });
+
