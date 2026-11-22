@@ -17,7 +17,7 @@ test.describe("New UserSignUp", () => {
 
     test("newuser signup step-1 @sanity", async () => {
         const uniqueEmail =
-            `sambit${Date.now()}@gmail.com`;
+            `sambit${Date.now()}@gmail.com`;//sambit06041991121311@gamil.com
 
         await newsignup.signup("sambitt kumar MOhapatra",
             uniqueEmail)

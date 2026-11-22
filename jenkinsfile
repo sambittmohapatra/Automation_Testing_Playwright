@@ -1,0 +1,175 @@
+pipeline {
+
+    agent any
+
+    tools {
+        git 'Default'
+    }
+
+    options {
+        timestamps()
+    }
+
+    parameters {
+
+        choice(
+            name: 'TEST_SUITE',
+            choices: [
+                'test:e2e',
+                'test:master',
+                'test:sanity',
+                'test:regression',
+                'test:api',
+                'test:web',
+                'test:datadriven'
+            ],
+            description: 'Select the test suite to run'
+        )
+
+        choice(
+            name: 'BROWSER',
+            choices: [
+                'chromium',
+                'firefox',
+                'webkit'
+            ],
+            description: 'Browser'
+        )
+
+        choice(
+            name: 'MODE',
+            choices: [
+                'headless',
+                'headed'
+            ],
+            description: 'Execution Mode'
+        )
+    }
+
+    environment {
+        NODE_ENV = 'test'
+        CI = '1'
+    }
+
+    stages {
+
+        stage('Checkout Source') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Setup ENV File') {
+            steps {
+
+                withCredentials([
+                    file(
+                        credentialsId: 'playwright-env',
+                        variable: 'ENV_FILE'
+                    )
+                ]) {
+
+                    powershell '''
+                        Copy-Item $env:ENV_FILE .env.qa -Force
+                    '''
+                }
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                powershell 'npm ci'
+            }
+        }
+
+        stage('Install Playwright') {
+            steps {
+                powershell 'npx playwright install --with-deps'
+            }
+        }
+
+        stage('Run Playwright Tests') {
+
+            steps {
+
+                script {
+
+                    def suite = params.TEST_SUITE
+                    def browserFlag = "--project=${params.BROWSER}"
+                    def modeFlag = params.MODE == 'headed' ? '--headed' : ''
+
+                    powershell """
+                        npm run ${suite} -- ${browserFlag} ${modeFlag}
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+
+        always {
+
+            archiveArtifacts(
+                artifacts: 'reports/**,custom-report/**,allure-results/**',
+                allowEmptyArchive: true
+            )
+
+            junit(
+                testResults: 'reports/results.xml',
+                allowEmptyResults: true
+            )
+
+            allure(
+                includeProperties: false,
+                results: [[path: 'allure-results']]
+            )
+
+            publishHTML([
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'reports',
+                reportFiles: 'index.html',
+                reportName: 'Playwright HTML Report'
+            ])
+
+            publishHTML([
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'custom-report',
+                reportFiles: '*.html',
+                reportName: 'Custom Test Report'
+            ])
+
+            emailext(
+                subject: "Build ${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
+                body: """
+                <h2>Playwright Execution Report</h2>
+
+                <p><b>Job:</b> ${env.JOB_NAME}</p>
+                <p><b>Build:</b> ${env.BUILD_NUMBER}</p>
+                <p><b>Status:</b> ${currentBuild.currentResult}</p>
+                <p><b>Suite:</b> ${params.TEST_SUITE}</p>
+                <p><b>Browser:</b> ${params.BROWSER}</p>
+
+                <a href="${env.BUILD_URL}">
+                    Open Jenkins Build
+                </a>
+                """,
+                to: "receiver@gmail.com",
+                mimeType: "text/html"
+            )
+        }
+
+        success {
+
+            powershell '''
+                if(Test-Path allure-results){
+                    Remove-Item -Recurse -Force allure-results
+                }
+            '''
+        }
+    }
+}
