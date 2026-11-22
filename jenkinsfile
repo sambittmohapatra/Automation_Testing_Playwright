@@ -144,24 +144,24 @@ pipeline {
                 reportName: 'Custom Test Report'
             ])
 
-            emailext(
-                subject: "Build ${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
-                body: """
-                <h2>Playwright Execution Report</h2>
+            // emailext(
+            //     subject: "Build ${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
+            //     body: """
+            //     <h2>Playwright Execution Report</h2>
 
-                <p><b>Job:</b> ${env.JOB_NAME}</p>
-                <p><b>Build:</b> ${env.BUILD_NUMBER}</p>
-                <p><b>Status:</b> ${currentBuild.currentResult}</p>
-                <p><b>Suite:</b> ${params.TEST_SUITE}</p>
-                <p><b>Browser:</b> ${params.BROWSER}</p>
+            //     <p><b>Job:</b> ${env.JOB_NAME}</p>
+            //     <p><b>Build:</b> ${env.BUILD_NUMBER}</p>
+            //     <p><b>Status:</b> ${currentBuild.currentResult}</p>
+            //     <p><b>Suite:</b> ${params.TEST_SUITE}</p>
+            //     <p><b>Browser:</b> ${params.BROWSER}</p>
 
-                <a href="${env.BUILD_URL}">
-                    Open Jenkins Build
-                </a>
-                """,
-                to: "receiver@gmail.com",
-                mimeType: "text/html"
-            )
+            //     <a href="${env.BUILD_URL}">
+            //         Open Jenkins Build
+            //     </a>
+            //     """,
+            //     to: "receiver@gmail.com",
+            //     mimeType: "text/html"
+            // )
         }
 
         success {
