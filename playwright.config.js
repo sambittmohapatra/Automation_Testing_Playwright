@@ -25,9 +25,9 @@ export default defineConfig({
 
   forbidOnly: !!process.env.CI,
 
-  reporter: [
-    ['reporting-labs', reportingLabs], 
-  ],
+   reporter: [
+     ['reporting-labs', reportingLabs], 
+   ],
 
   use: {
     baseURL: process.env.BASEURL,

@@ -76,7 +76,7 @@ test.describe("New UserSignUp", () => {
 
     //Verify validation message when invalid email format is entered
 
-    test("invalid Signup with Invalid Email format  Blank @sanity", async () => {
+    test("invalid Signup with Invalid Email format  @sanity", async () => {
 
         await newsignup.signup("Sambit", "Samb123")
 
