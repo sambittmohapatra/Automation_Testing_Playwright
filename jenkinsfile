@@ -31,8 +31,8 @@ pipeline {
             name: 'BROWSER',
             choices: [
                 'chromium',
-                'firefox',
-                'webkit'
+                // 'firefox',
+                // 'webkit'
             ],
             description: 'Browser'
         )
@@ -41,7 +41,7 @@ pipeline {
             name: 'MODE',
             choices: [
                 'headless',
-                'headed'
+                // 'headed'
             ],
             description: 'Execution Mode'
         )
@@ -85,7 +85,7 @@ pipeline {
 
         stage('Install Playwright') {
             steps {
-                powershell 'npx playwright install --with-deps'
+                powershell 'npx playwright install chromium'
             }
         }
 
