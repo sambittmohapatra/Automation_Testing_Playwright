@@ -1,11 +1,14 @@
+
 // @ts-check
 
 import { defineConfig, devices } from '@playwright/test';
 import reportingLabs from './reporting-labs.config';
 import dotenv from 'dotenv';
 
-
-dotenv.config();
+// Load environment-specific file
+dotenv.config({
+    path: `.env.${process.env.ENV || 'qa'}`
+});
 
 export default defineConfig({
 
@@ -25,9 +28,9 @@ export default defineConfig({
 
   forbidOnly: !!process.env.CI,
 
-   reporter: [
-     ['reporting-labs', reportingLabs], 
-   ],
+  reporter: [
+    ['reporting-labs', reportingLabs],
+  ],
 
   use: {
     baseURL: process.env.BASEURL,
